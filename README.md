@@ -1,6 +1,6 @@
 # Welcome to the best game in the world: FamISH
 
-![logo](logo.png)
+![logo](src/images/logo.png)
 
 ## Gameplay
 
