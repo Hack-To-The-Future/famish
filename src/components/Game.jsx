@@ -53,7 +53,6 @@ const Game = () => {
     var maxScale = 7;
     var fishEvent;
     var fish;
-    var maxFish = 300;
 
     const eatFish = (player, fish) => {
       fish.disableBody(true, true);
@@ -192,7 +191,7 @@ const Game = () => {
 
       this.physics.add.overlap(player, fish, eatFish, null, this);
 
-      fishEvent = this.time.addEvent({
+      this.time.addEvent({
         delay: 10000,
         callback: newFishEvent,
         callbackScope: this,
@@ -200,9 +199,6 @@ const Game = () => {
       });
     }
 
-    function goodbye(obj) {
-      obj.kill();
-    }
   }, []);
 
   return <></>;
