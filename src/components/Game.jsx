@@ -21,13 +21,26 @@ const Game = () => {
     };
 
     let game = new Phaser.Game(config);
+    const fishes = ["fish", "fish2", "fish3"];
 
     function preload() {
       this.load.image("background", "assets/background.png");
       this.load.image("ground", "assets/platform.png");
-      this.load.image("fish", "assets/star.png");
       this.load.image("bomb", "assets/bomb.png");
       this.load.spritesheet("fish-main", "assets/fish-main.png", {
+        frameWidth: Math.floor(1635 / 12),
+        frameHeight: 90,
+      });
+
+      this.load.spritesheet("fish", "assets/fish1.png", {
+        frameWidth: Math.floor(1635 / 12),
+        frameHeight: 90,
+      });
+      this.load.spritesheet("fish2", "assets/fish2.png", {
+        frameWidth: Math.floor(1635 / 12),
+        frameHeight: 90,
+      });
+      this.load.spritesheet("fish3", "assets/fish3.png", {
         frameWidth: Math.floor(1635 / 12),
         frameHeight: 90,
       });
@@ -36,7 +49,6 @@ const Game = () => {
     var platforms;
     var player;
     var cursors;
-    var stars;
     var playerScore = 1;
     var maxScale = 7;
     var fishEvent;
@@ -49,14 +61,14 @@ const Game = () => {
         playerScore += fish.fishSize * 0.1;
         player.setScale(scaleFunction(playerScore));
       } else {
-        alert('Game over!');
-        window.location.reload(); 
+        alert("Game over!");
+        window.location.reload();
       }
     };
 
     const scaleFunction = (x) => {
-      return Math.tanh(x * 0.01) * maxScale;
-    }
+      return Math.tanh(x * 0.05) * maxScale;
+    };
 
     function create() {
       game.scale.pageAlignHorizontally = true;
@@ -105,12 +117,12 @@ const Game = () => {
 
       player.setScale(scaleFunction(1));
 
-      // fishEvent = this.time.addEvent({
-      //   delay: 1000,
-      //   callback: newFishEvent,
-      //   callbackScope: this,
-      //   loop: true,
-      // });
+      fishEvent = this.time.addEvent({
+        delay: 1000,
+        callback: newFishEvent,
+        callbackScope: this,
+        loop: true,
+      });
     }
 
     function update() {
@@ -140,34 +152,43 @@ const Game = () => {
     function bobFish(fishes) {
       fishes.children.iterate(function (child) {
         const fishSpeed = child.body.velocity.x;
-        const bobSpeed = Math.floor(Math.random() * (fishSpeed*0.75) - (fishSpeed*0.75)/2);
+        const bobSpeed = Math.floor(
+          Math.random() * (fishSpeed * 0.75) - (fishSpeed * 0.75) / 2
+        );
         child.setVelocityY(bobSpeed);
       });
     }
 
     function newFishEvent() {
-      const side = (Math.random() > 0.5)? 0 : config.width;
-      const direction = (side === 0)? 1:-1
+      const side = Math.random() > 0.5 ? 0 : config.width;
+      const fishtype = Math.floor(Math.random() * 3);
+      const direction = side === 0 ? 1 : -1;
       fish = this.physics.add.group({
-        key: "fish",
+        key: fishes[fishtype],
         setXY: { x: side, y: Math.floor(Math.random() * config.height) },
       });
 
       fish.children.iterate(function (child) {
         const fishSpeed = Math.floor(Math.random() * 230);
-        const bobSpeed = Math.floor(Math.random() * (fishSpeed*0.75) - (fishSpeed*0.75)/2);
-        child.setVelocityX(direction*fishSpeed);
+        const bobSpeed = Math.floor(
+          Math.random() * (fishSpeed * 0.75) - (fishSpeed * 0.75) / 2
+        );
+        child.setVelocityX(direction * fishSpeed);
         child.setVelocityY(bobSpeed);
-        child.fishSize = Math.max(playerScore - (Math.random() * playerScore/2) + playerScore/4 , 0.5)
+        child.fishSize = Math.max(
+          playerScore - (Math.random() * playerScore) / 4 + playerScore / 8,
+          0.5
+        );
         child.setScale(scaleFunction(child.fishSize));
       });
-      
+
       const bobTime = Math.floor(Math.random() * 6000) + 500;
-      this.time.addEvent({ 
-        delay: bobTime, 
-        callback: bobFish, 
-        args: [fish], 
-        loop: true });
+      this.time.addEvent({
+        delay: bobTime,
+        callback: bobFish,
+        args: [fish],
+        loop: true,
+      });
 
       this.physics.add.overlap(player, fish, eatFish, null, this);
 
@@ -179,8 +200,9 @@ const Game = () => {
       });
     }
 
-    function goodbye(obj) {   obj.kill();}
-
+    function goodbye(obj) {
+      obj.kill();
+    }
   }, []);
 
   return <></>;
