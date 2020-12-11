@@ -66,7 +66,7 @@ const Game = () => {
     };
 
     const scaleFunction = (x) => {
-      return Math.tanh(x * 0.01) * maxScale;
+      return Math.tanh(x * 0.02) * maxScale;
     };
 
     function create() {
