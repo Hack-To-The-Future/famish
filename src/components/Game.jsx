@@ -67,7 +67,7 @@ const Game = () => {
     };
 
     const scaleFunction = (x) => {
-      return Math.tanh(x * 0.05) * maxScale;
+      return Math.tanh(x * 0.01) * maxScale;
     };
 
     function create() {
@@ -176,7 +176,7 @@ const Game = () => {
         child.setVelocityX(direction * fishSpeed);
         child.setVelocityY(bobSpeed);
         child.fishSize = Math.max(
-          playerScore - (Math.random() * playerScore) / 4 + playerScore / 8,
+          playerScore - (Math.random() * playerScore) / 2 + playerScore / 4,
           0.5
         );
         child.setScale(scaleFunction(child.fishSize));
