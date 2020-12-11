@@ -45,7 +45,7 @@ const Game = () => {
 
     const eatFish = (player, fish) => {
       fish.disableBody(true, true);
-      if (playerScore > fish.fishSize) {
+      if (playerScore >= fish.fishSize) {
         playerScore += fish.fishSize * 0.1;
         player.setScale(scaleFunction(playerScore));
       } else {
@@ -123,7 +123,6 @@ const Game = () => {
       } else {
         const vel = player.body.velocity;
         player.setVelocityX(vel.x * 0.99);
-        player.anims.play("turn");
       }
 
       if (cursors.up.isDown) {
@@ -163,7 +162,7 @@ const Game = () => {
         );
         child.setVelocityX(direction * fishSpeed);
         child.setVelocityY(bobSpeed);
-        child.fishSize = Math.random() * playerScore * 1.5;
+        child.fishSize = Math.max(playerScore - (Math.random() * playerScore/4) + playerScore/8 , 0.5)
         child.setScale(scaleFunction(child.fishSize));
       });
 
