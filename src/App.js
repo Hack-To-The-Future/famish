@@ -7,12 +7,11 @@ function App() {
   useEffect(() => {
     var config = {
       type: Phaser.AUTO,
-      width: 800,
-      height: 600,
+      width: window.innerWidth,
+      height: window.innerHeight,
       physics: {
         default: 'arcade',
         arcade: {
-          gravity: { y: 300 },
           debug: false
         }
       },
@@ -42,18 +41,17 @@ function App() {
   var cursors;
   var stars;
   var scale = 1;
+  var maxScale = 7;
   const collectStar = (player, star) => {
     star.disableBody(true, true);
-
-    console.log(player);
-    scale *= 1.5;
-    player.setScale(scale);
+    scale += 1
+    const scalef = Math.tanh(scale*0.05)*maxScale;
+    player.setScale(scalef);
   }
 
   function create ()
   {
-    this.add.image(400, 300, 'sky');
-    this.add.image(400, 300, 'star');
+    this.add.image(400, 300, 'sky').setScale(2);
 
     platforms = this.physics.add.staticGroup();
 
@@ -111,7 +109,8 @@ function App() {
       player.anims.play('right', true);
     }
     else {
-      player.setVelocityX(0);
+      const vel = player.body.velocity;
+      player.setVelocityX(vel.x*0.99);
       player.anims.play('turn');
     }
 
@@ -122,10 +121,9 @@ function App() {
     else if (cursors.down.isDown) {
       player.setVelocityY(160);
       player.anims.play('turn', true);
-    }
-    else {
-      //player.setVelocityY(0);
-      player.anims.play('turn');
+    } else {
+      const vel = player.body.velocity;
+      player.setVelocityY(vel.y*0.95);
     }
   }
 
