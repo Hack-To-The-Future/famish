@@ -25,7 +25,7 @@ const Game = () => {
     function preload() {
       this.load.image("sky", "assets/sky.png");
       this.load.image("ground", "assets/platform.png");
-      this.load.image("star", "assets/star.png");
+      this.load.image("fish", "assets/star.png");
       this.load.image("bomb", "assets/bomb.png");
       this.load.spritesheet("dude", "assets/dude.png", {
         frameWidth: 32,
@@ -37,24 +37,26 @@ const Game = () => {
     var player;
     var cursors;
     var stars;
-    var scale = 1;
+    var playerScore = 1;
     var maxScale = 7;
     var fishEvent;
     var fish;
-
-    const collectStar = (player, star) => {
-      star.disableBody(true, true);
-      scale += 1;
-      const scalef = Math.tanh(scale * 0.05) * maxScale;
-      player.setScale(scalef);
-    };
+    var maxFish = 300;
 
     const eatFish = (player, fish) => {
       fish.disableBody(true, true);
-      scale += 1;
-      const scalef = Math.tanh(scale * 0.05) * maxScale;
-      player.setScale(scalef);
+      if (playerScore > fish.fishSize) {
+        playerScore += fish.fishSize * 0.1;
+        player.setScale(scaleFunction(playerScore));
+      } else {
+        alert('Game over!');
+        window.location.reload(); 
+      }
     };
+
+    const scaleFunction = (x) => {
+      return Math.tanh(x * 0.05) * maxScale;
+    }
 
     function create() {
       this.add.image(400, 300, "sky").setScale(2);
@@ -90,19 +92,7 @@ const Game = () => {
       this.physics.add.collider(player, platforms);
       cursors = this.input.keyboard.createCursorKeys();
 
-      stars = this.physics.add.group({
-        key: "star",
-        repeat: 11,
-        setXY: { x: 12, y: 0, stepX: 70 },
-      });
-
-      stars.children.iterate(function (child) {
-        child.setBounceY(Phaser.Math.FloatBetween(0.4, 0.8));
-        child.setCollideWorldBounds(true);
-      });
-
-      this.physics.add.collider(stars, platforms);
-      this.physics.add.overlap(player, stars, collectStar, null, this);
+      player.setScale(scaleFunction(1));
 
       fishEvent = this.time.addEvent({
         delay: 1000,
@@ -137,20 +127,50 @@ const Game = () => {
       }
     }
 
+    function bobFish(fishes) {
+      fishes.children.iterate(function (child) {
+        const fishSpeed = child.body.velocity.x;
+        const bobSpeed = Math.floor(Math.random() * (fishSpeed*0.75) - (fishSpeed*0.75)/2);
+        child.setVelocityY(bobSpeed);
+      });
+    }
+
     function newFishEvent() {
+      const side = (Math.random() > 0.5)? 0 : config.width;
+      const direction = (side === 0)? 1:-1
       fish = this.physics.add.group({
-        key: "star",
-        repeat: 10,
-        setXY: { x: 0, y: 10, stepY: 70 },
+        key: "fish",
+        setXY: { x: side, y: Math.floor(Math.random() * config.height) },
       });
 
+      fish.children.iterate(function (child) {
+        const fishSpeed = Math.floor(Math.random() * 230);
+        const bobSpeed = Math.floor(Math.random() * (fishSpeed*0.75) - (fishSpeed*0.75)/2);
+        child.setVelocityX(direction*fishSpeed);
+        child.setVelocityY(bobSpeed);
+        child.fishSize = Math.random() * playerScore * 1.5;
+        child.setScale(scaleFunction(child.fishSize));
+      });
+      
+      const bobTime = Math.floor(Math.random() * 6000) + 500;
+      this.time.addEvent({ 
+        delay: bobTime, 
+        callback: bobFish, 
+        args: [fish], 
+        loop: true });
+
+      this.physics.add.overlap(player, fish, eatFish, null, this);
+
       fishEvent = this.time.addEvent({
-        delay: 1000,
+        delay: 10000,
         callback: newFishEvent,
         callbackScope: this,
         loop: true,
       });
     }
+
+    function goodbye(obj) {   obj.kill();}
+
   }, []);
 
   return <></>;
