@@ -122,6 +122,8 @@ const Game = () => {
         callbackScope: this,
         loop: true,
       });
+
+      console.log(fishEvent);
     }
 
     function update() {
@@ -198,7 +200,6 @@ const Game = () => {
         loop: true,
       });
     }
-
   }, []);
 
   return <></>;
