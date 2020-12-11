@@ -123,7 +123,6 @@ const Game = () => {
       } else {
         const vel = player.body.velocity;
         player.setVelocityX(vel.x * 0.99);
-        player.anims.play("turn");
       }
 
       if (cursors.up.isDown) {
