@@ -5,8 +5,8 @@ const Game = () => {
   useEffect(() => {
     var config = {
       type: Phaser.AUTO,
-      width: window.innerWidth,
-      height: window.innerHeight,
+      width: 1350,
+      height: 550,
       physics: {
         default: "arcade",
         arcade: {
@@ -20,16 +20,16 @@ const Game = () => {
       },
     };
 
-    new Phaser.Game(config);
+    let game = new Phaser.Game(config);
 
     function preload() {
-      this.load.image("sky", "assets/sky.png");
+      this.load.image("background", "assets/background.png");
       this.load.image("ground", "assets/platform.png");
       this.load.image("star", "assets/star.png");
       this.load.image("bomb", "assets/bomb.png");
-      this.load.spritesheet("dude", "assets/dude.png", {
-        frameWidth: 32,
-        frameHeight: 48,
+      this.load.spritesheet("fish-main", "assets/fish-main.png", {
+        frameWidth: Math.floor(1635 / 12),
+        frameHeight: 90,
       });
     }
 
@@ -57,11 +57,16 @@ const Game = () => {
     };
 
     function create() {
-      this.add.image(400, 300, "sky").setScale(2);
+      game.scale.pageAlignHorizontally = true;
+      game.scale.pageAlignVertically = true;
+
+      this.cameras.main.setBackgroundColor("#fff");
+
+      this.add.image(1350 / 2, 550 / 2, "background");
 
       platforms = this.physics.add.staticGroup();
 
-      player = this.physics.add.sprite(100, 450, "dude");
+      player = this.physics.add.sprite(100, 450, "fish-main");
       player.setVelocityX(160);
       player.setBounce(0.2);
 
@@ -69,20 +74,26 @@ const Game = () => {
 
       this.anims.create({
         key: "left",
-        frames: this.anims.generateFrameNumbers("dude", { start: 0, end: 3 }),
+        frames: this.anims.generateFrameNumbers("fish-main", {
+          start: 0,
+          end: 5,
+        }),
         frameRate: 10,
         repeat: -1,
       });
 
       this.anims.create({
         key: "turn",
-        frames: [{ key: "dude", frame: 4 }],
+        frames: [{ key: "fish-main", frame: 6 }],
         frameRate: 20,
       });
 
       this.anims.create({
         key: "right",
-        frames: this.anims.generateFrameNumbers("dude", { start: 5, end: 8 }),
+        frames: this.anims.generateFrameNumbers("fish-main", {
+          start: 6,
+          end: 11,
+        }),
         frameRate: 10,
         repeat: -1,
       });
@@ -104,12 +115,12 @@ const Game = () => {
       this.physics.add.collider(stars, platforms);
       this.physics.add.overlap(player, stars, collectStar, null, this);
 
-      fishEvent = this.time.addEvent({
-        delay: 1000,
-        callback: newFishEvent,
-        callbackScope: this,
-        loop: true,
-      });
+      // fishEvent = this.time.addEvent({
+      //   delay: 1000,
+      //   callback: newFishEvent,
+      //   callbackScope: this,
+      //   loop: true,
+      // });
     }
 
     function update() {
