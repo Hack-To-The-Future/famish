@@ -49,14 +49,14 @@ const Game = () => {
         playerScore += fish.fishSize * 0.1;
         player.setScale(scaleFunction(playerScore));
       } else {
-        alert('Game over!');
-        window.location.reload(); 
+        alert("Game over!");
+        window.location.reload();
       }
     };
 
     const scaleFunction = (x) => {
       return Math.tanh(x * 0.05) * maxScale;
-    }
+    };
 
     function create() {
       game.scale.pageAlignHorizontally = true;
@@ -105,12 +105,12 @@ const Game = () => {
 
       player.setScale(scaleFunction(1));
 
-      // fishEvent = this.time.addEvent({
-      //   delay: 1000,
-      //   callback: newFishEvent,
-      //   callbackScope: this,
-      //   loop: true,
-      // });
+      fishEvent = this.time.addEvent({
+        delay: 1000,
+        callback: newFishEvent,
+        callbackScope: this,
+        loop: true,
+      });
     }
 
     function update() {
@@ -141,14 +141,16 @@ const Game = () => {
     function bobFish(fishes) {
       fishes.children.iterate(function (child) {
         const fishSpeed = child.body.velocity.x;
-        const bobSpeed = Math.floor(Math.random() * (fishSpeed*0.75) - (fishSpeed*0.75)/2);
+        const bobSpeed = Math.floor(
+          Math.random() * (fishSpeed * 0.75) - (fishSpeed * 0.75) / 2
+        );
         child.setVelocityY(bobSpeed);
       });
     }
 
     function newFishEvent() {
-      const side = (Math.random() > 0.5)? 0 : config.width;
-      const direction = (side === 0)? 1:-1
+      const side = Math.random() > 0.5 ? 0 : config.width;
+      const direction = side === 0 ? 1 : -1;
       fish = this.physics.add.group({
         key: "fish",
         setXY: { x: side, y: Math.floor(Math.random() * config.height) },
@@ -156,19 +158,22 @@ const Game = () => {
 
       fish.children.iterate(function (child) {
         const fishSpeed = Math.floor(Math.random() * 230);
-        const bobSpeed = Math.floor(Math.random() * (fishSpeed*0.75) - (fishSpeed*0.75)/2);
-        child.setVelocityX(direction*fishSpeed);
+        const bobSpeed = Math.floor(
+          Math.random() * (fishSpeed * 0.75) - (fishSpeed * 0.75) / 2
+        );
+        child.setVelocityX(direction * fishSpeed);
         child.setVelocityY(bobSpeed);
         child.fishSize = Math.random() * playerScore * 1.5;
         child.setScale(scaleFunction(child.fishSize));
       });
-      
+
       const bobTime = Math.floor(Math.random() * 6000) + 500;
-      this.time.addEvent({ 
-        delay: bobTime, 
-        callback: bobFish, 
-        args: [fish], 
-        loop: true });
+      this.time.addEvent({
+        delay: bobTime,
+        callback: bobFish,
+        args: [fish],
+        loop: true,
+      });
 
       this.physics.add.overlap(player, fish, eatFish, null, this);
 
@@ -180,8 +185,9 @@ const Game = () => {
       });
     }
 
-    function goodbye(obj) {   obj.kill();}
-
+    function goodbye(obj) {
+      obj.kill();
+    }
   }, []);
 
   return <></>;
