@@ -21,13 +21,26 @@ const Game = () => {
     };
 
     let game = new Phaser.Game(config);
+    const fishes = ["fish", "fish2", "fish3"];
 
     function preload() {
       this.load.image("background", "assets/background.png");
       this.load.image("ground", "assets/platform.png");
-      this.load.image("fish", "assets/star.png");
       this.load.image("bomb", "assets/bomb.png");
       this.load.spritesheet("fish-main", "assets/fish-main.png", {
+        frameWidth: Math.floor(1635 / 12),
+        frameHeight: 90,
+      });
+
+      this.load.spritesheet("fish", "assets/fish1.png", {
+        frameWidth: Math.floor(1635 / 12),
+        frameHeight: 90,
+      });
+      this.load.spritesheet("fish2", "assets/fish2.png", {
+        frameWidth: Math.floor(1635 / 12),
+        frameHeight: 90,
+      });
+      this.load.spritesheet("fish3", "assets/fish3.png", {
         frameWidth: Math.floor(1635 / 12),
         frameHeight: 90,
       });
@@ -36,7 +49,6 @@ const Game = () => {
     var platforms;
     var player;
     var cursors;
-    var stars;
     var playerScore = 1;
     var maxScale = 7;
     var fishEvent;
@@ -149,9 +161,10 @@ const Game = () => {
 
     function newFishEvent() {
       const side = Math.random() > 0.5 ? 0 : config.width;
+      const fishtype = Math.floor(Math.random() * 3);
       const direction = side === 0 ? 1 : -1;
       fish = this.physics.add.group({
-        key: "fish",
+        key: fishes[fishtype],
         setXY: { x: side, y: Math.floor(Math.random() * config.height) },
       });
 
@@ -162,7 +175,10 @@ const Game = () => {
         );
         child.setVelocityX(direction * fishSpeed);
         child.setVelocityY(bobSpeed);
-        child.fishSize = Math.max(playerScore - (Math.random() * playerScore/4) + playerScore/8 , 0.5)
+        child.fishSize = Math.max(
+          playerScore - (Math.random() * playerScore) / 4 + playerScore / 8,
+          0.5
+        );
         child.setScale(scaleFunction(child.fishSize));
       });
 
